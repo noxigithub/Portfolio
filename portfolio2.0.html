@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JSG | Lead Full-Stack Developer</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #050505;
+        --text: #f0f0f0;
+        --accent: #39ff14;
+        --accent-glow: rgba(57, 255, 20, 0.4);
+        --card-bg: rgba(255, 255, 255, 0.03);
+        --card-border: rgba(255, 255, 255, 0.08);
+        --nav-bg: rgba(5, 5, 5, 0.7);
+      }
+
+      /* CyberOps Mode Variables */
+      body.cyber-mode {
+        --bg: #0a0000;
+        --accent: #ff003c;
+        --accent-glow: rgba(255, 0, 60, 0.4);
+        --text: #ffb3b3;
+        --card-bg: rgba(255, 0, 0, 0.05);
+        --card-border: rgba(255, 0, 0, 0.2);
+        --nav-bg: rgba(10, 0, 0, 0.7);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        overflow-x: hidden;
+        transition: background-color 0.5s ease;
+      }
+
+      /* Canvas Background */
+      canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+      }
+
+      /* Navigation */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 1.2rem 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--nav-bg);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--card-border);
+        z-index: 100;
+        transition: all 0.3s ease;
+      }
+
+      .nav-logo {
+        font-weight: 600;
+        font-size: 1.2rem;
+        color: var(--text);
+        text-decoration: none;
+        letter-spacing: 2px;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+      }
+
+      .nav-links a {
+        color: #aaa;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.3s;
+      }
+
+      .nav-links a:hover {
+        color: var(--accent);
+      }
+
+      .btn-contact {
+        background: transparent;
+        color: var(--accent);
+        border: 1px solid var(--accent);
+        padding: 0.5rem 1.5rem;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+        box-shadow: 0 0 10px transparent;
+      }
+
+      .btn-contact:hover {
+        background: var(--accent);
+        color: #000;
+        box-shadow: 0 0 20px var(--accent-glow);
+      }
+
+      /* Layout */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Hero / About Section */
+      #about {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding-top: 80px; /* offset for nav */
+        animation: fadeIn 2s ease-out;
+      }
+
+      #about p.greeting {
+        color: var(--accent);
+        font-family: monospace;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+      }
+
+      #about h1 {
+        font-size: 5rem;
+        font-weight: 600;
+        letter-spacing: -2px;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        cursor: pointer;
+        transition: color 0.3s;
+      }
+
+      #about h1:hover {
+        color: var(--accent);
+      }
+
+      #about .subtitle {
+        font-size: 1.5rem;
+        font-weight: 300;
+        color: #888;
+        max-width: 600px;
+        line-height: 1.6;
+        margin-bottom: 3rem;
+      }
+
+      /* Projects Section */
+      #projects {
+        padding: 100px 0;
+      }
+
+      .section-title {
+        font-size: 2.5rem;
+        margin-bottom: 3rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .section-title::after {
+        content: "";
+        height: 1px;
+        flex-grow: 1;
+        background: var(--card-border);
+      }
+
+      .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2rem;
+      }
+
+      /* Glassmorphism Cards */
+      .card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        padding: 2.5rem 2rem;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        transition:
+          transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+          box-shadow 0.4s ease,
+          border-color 0.4s ease;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        text-decoration: none; /* Para cuando es un tag <a> */
+        color: inherit;
+      }
+
+      /* Efecto luz pasando solo para las tarjetas online */
+      a.card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(
+          to right,
+          transparent,
+          rgba(255, 255, 255, 0.05),
+          transparent
+        );
+        transform: skewX(-20deg);
+        transition: 0.7s;
+      }
+
+      a.card:hover::before {
+        left: 150%;
+      }
+
+      a.card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        border-color: rgba(255, 255, 255, 0.2);
+        cursor: pointer;
+      }
+
+      /* Badges de estado */
+      .status {
+        position: absolute;
+        top: 1rem;
+        right: 1.5rem;
+        font-size: 0.75rem;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 600;
+      }
+
+      .status.building {
+        background: rgba(255, 255, 255, 0.1);
+        color: #aaa;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .status.live {
+        background: rgba(57, 255, 20, 0.1);
+        color: var(--accent);
+        border: 1px solid var(--accent);
+      }
+
+      .status.live::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        background: var(--accent);
+        border-radius: 50%;
+        box-shadow: 0 0 8px var(--accent);
+        animation: pulse 1.5s infinite;
+      }
+
+      .card-title {
+        font-size: 1.5rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        color: #fff;
+      }
+
+      .card-desc {
+        font-size: 0.95rem;
+        color: #aaa;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+      }
+
+      .tags {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .tag {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.8rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        color: #ccc;
+        font-family: monospace;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.5);
+          opacity: 0.5;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      /* Easter Egg Notification */
+      #secret-toast {
+        position: fixed;
+        bottom: -100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--accent);
+        color: #000;
+        padding: 1rem 2rem;
+        border-radius: 30px;
+        font-weight: 600;
+        transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        z-index: 1000;
+      }
+      #secret-toast.show {
+        bottom: 30px;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        #about h1 {
+          font-size: 3.5rem;
+        }
+        .nav-links {
+          display: none;
+        } /* En móvil puedes añadir menú hamburguesa después */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Fondo interactivo -->
+    <canvas id="bg-canvas"></canvas>
+    <div id="secret-toast">🥚 ¡Secreto desbloqueado!</div>
+
+    <!-- Navegación -->
+    <nav>
+      <a href="#" class="nav-logo">JSG_</a>
+      <div class="nav-links">
+        <a href="#about">Inicio</a>
+        <a href="#projects">Proyectos</a>
+        <a href="mailto:juanc7795@gmail.com" class="btn-contact">Contáctame</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <!-- Hero / Presentación -->
+      <section id="about">
+        <p class="greeting">> Hola mundo, soy</p>
+        <h1 id="brand-name">Juan Sebastian<br />Gómez.</h1>
+        <p class="subtitle">
+          Lead Full-Stack Developer especializado en construir aplicaciones web
+          escalables, arquitecturas sólidas y experiencias digitales
+          interactivas.
+        </p>
+        <a
+          href="https://wa.link/ge4g3a"
+          target="_blank"
+          class="btn-contact"
+          style="padding: 1rem 2rem; font-size: 1.1rem"
+          >Hablemos de tu proyecto</a
+        >
+      </section>
+
+      <!-- Proyectos -->
+      <section id="projects">
+        <h2 class="section-title">Portafolio</h2>
+        <div class="projects-grid">
+          <!-- PROYECTOS ONLINE (Clickeables) -->
+          <a
+            href="https://plannerenglishworkforce.com/"
+            target="_blank"
+            class="card live"
+          >
+            <div class="status live">Online</div>
+            <h3 class="card-title">Planner English Workforce</h3>
+            <p class="card-desc">
+              Landing page optimizada para alta conversión y presentación de
+              servicios educativos B2B.
+            </p>
+            <div class="tags">
+              <span class="tag">HTML</span><span class="tag">WordPress</span
+              ><span class="tag">CSS</span><span class="tag">JavaScript</span>
+            </div>
+          </a>
+
+          <a
+            href="https://www.casahotelelcompadre.co/"
+            target="_blank"
+            class="card live"
+          >
+            <div class="status live">Online</div>
+            <h3 class="card-title">Casa Hotel el Compadre</h3>
+            <p class="card-desc">
+              Sistema web de exhibición y gestión de información turística para
+              el sector hotelero.
+            </p>
+            <div class="tags">
+              <span class="tag">PHP</span><span class="tag">JavaScript</span
+              ><span class="tag">Bootstrap</span><span class="tag">CSS</span>
+            </div>
+          </a>
+
+          <a href="https://2love1.org/" target="_blank" class="card live">
+            <div class="status live">Online</div>
+            <h3 class="card-title">2Love1</h3>
+            <p class="card-desc">
+              Aplicación web orientada a servicios de salud mental, con
+              arquitectura basada en gestión de contenidos (CMS).
+            </p>
+            <div class="tags">
+              <span class="tag">WordPress</span><span class="tag">PHP</span
+              ><span class="tag">JavaScript</span><span class="tag">CSS</span>
+            </div>
+          </a>
+
+          <a
+            href="http://horrible-pocket.surge.sh/"
+            target="_blank"
+            class="card live"
+          >
+            <div class="status live">Online</div>
+            <h3 class="card-title">Coffee Shop UI</h3>
+            <p class="card-desc">
+              Prototipo interactivo (mockup funcional) de interfaz UI/UX para
+              sistema minorista local.
+            </p>
+            <div class="tags">
+              <span class="tag">JavaScript</span><span class="tag">CSS</span
+              ><span class="tag">HTML</span>
+            </div>
+          </a>
+
+          <a
+            href="http://flowery-summer.surge.sh/"
+            target="_blank"
+            class="card live"
+          >
+            <div class="status live">Online</div>
+            <h3 class="card-title">Nookstore</h3>
+            <p class="card-desc">
+              Prototipo de e-commerce literario con renderizado dinámico del DOM
+              y estructura basada en componentes visuales.
+            </p>
+            <div class="tags">
+              <span class="tag">JavaScript</span
+              ><span class="tag">Bootstrap</span><span class="tag">CSS</span>
+            </div>
+          </a>
+
+          <!-- PROYECTOS EN CONSTRUCCIÓN (No clickeables) -->
+          <div class="card construction">
+            <div class="status building">En construcción</div>
+            <h3 class="card-title">CyberOps</h3>
+            <p class="card-desc">
+              Plataforma gamificada en 3D para ciberseguridad. Arquitectura
+              robusta enfocada en la retención de usuarios.
+            </p>
+            <div class="tags">
+              <span class="tag">React Native</span
+              ><span class="tag">Laravel 12</span><span class="tag">MySQL</span>
+            </div>
+          </div>
+
+          <div class="card construction">
+            <div class="status building">En construcción</div>
+            <h3 class="card-title">Beatdown Gym SaaS</h3>
+            <p class="card-desc">
+              Sistema multi-tenant para gestión de gimnasios con enrutamiento
+              por subdominios, optimizado para alta concurrencia.
+            </p>
+            <div class="tags">
+              <span class="tag">Laravel 12</span
+              ><span class="tag">Livewire</span
+              ><span class="tag">Tailwind</span>
+            </div>
+          </div>
+
+          <div class="card construction">
+            <div class="status building">En construcción</div>
+            <h3 class="card-title">Obs. de Salud Mental</h3>
+            <p class="card-desc">
+              Integración de datos gubernamentales con dashboards interactivos
+              para análisis en tiempo real.
+            </p>
+            <div class="tags">
+              <span class="tag">PHP</span><span class="tag">Power BI</span
+              ><span class="tag">API REST</span>
+            </div>
+          </div>
+
+          <div class="card construction">
+            <div class="status building">En construcción</div>
+            <h3 class="card-title">Practidocumentos</h3>
+            <p class="card-desc">
+              Plataforma B2C para la automatización, gestión y venta de
+              documentos legales con flujos de pago integrados.
+            </p>
+            <div class="tags">
+              <span class="tag">React</span><span class="tag">PHP</span
+              ><span class="tag">Bootstrap</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      // ==========================================
+      // 1. BACKGROUND INTERACTIVO CON CANVAS API
+      // ==========================================
+      const canvas = document.getElementById("bg-canvas");
+      const ctx = canvas.getContext("2d");
+      let width, height;
+      let particles = [];
+      const mouse = { x: null, y: null, radius: 150 };
+
+      function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      }
+      window.addEventListener("resize", resize);
+      resize();
+
+      window.addEventListener("mousemove", (e) => {
+        mouse.x = e.x;
+        mouse.y = e.y;
+      });
+      window.addEventListener("mouseout", () => {
+        mouse.x = null;
+        mouse.y = null;
+      });
+
+      class Particle {
+        constructor() {
+          this.x = Math.random() * width;
+          this.y = Math.random() * height;
+          this.size = Math.random() * 2 + 1;
+          this.baseX = this.x;
+          this.baseY = this.y;
+          this.density = Math.random() * 30 + 1;
+        }
+        draw() {
+          ctx.fillStyle = document.body.classList.contains("cyber-mode")
+            ? "rgba(255, 0, 60, 0.8)"
+            : "rgba(255, 255, 255, 0.8)";
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.closePath();
+          ctx.fill();
+        }
+        update() {
+          let dx = mouse.x - this.x;
+          let dy = mouse.y - this.y;
+          let distance = Math.sqrt(dx * dx + dy * dy);
+          let forceDirectionX = dx / distance;
+          let forceDirectionY = dy / distance;
+          let maxDistance = mouse.radius;
+          let force = (maxDistance - distance) / maxDistance;
+          let directionX = forceDirectionX * force * this.density;
+          let directionY = forceDirectionY * force * this.density;
+
+          if (distance < mouse.radius) {
+            this.x -= directionX;
+            this.y -= directionY;
+          } else {
+            if (this.x !== this.baseX) {
+              let dx = this.x - this.baseX;
+              this.x -= dx / 10;
+            }
+            if (this.y !== this.baseY) {
+              let dy = this.y - this.baseY;
+              this.y -= dy / 10;
+            }
+          }
+        }
+      }
+
+      function init() {
+        particles = [];
+        let numberOfParticles = (width * height) / 9000;
+        for (let i = 0; i < numberOfParticles; i++) {
+          particles.push(new Particle());
+        }
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, width, height);
+        for (let i = 0; i < particles.length; i++) {
+          particles[i].update();
+          particles[i].draw();
+        }
+        connect();
+        requestAnimationFrame(animate);
+      }
+
+      function connect() {
+        let opacityValue = 1;
+        let strokeColor = document.body.classList.contains("cyber-mode")
+          ? "255, 0, 60"
+          : "255, 255, 255";
+
+        for (let a = 0; a < particles.length; a++) {
+          for (let b = a; b < particles.length; b++) {
+            let distance =
+              (particles[a].x - particles[b].x) *
+                (particles[a].x - particles[b].x) +
+              (particles[a].y - particles[b].y) *
+                (particles[a].y - particles[b].y);
+            if (distance < (width / 7) * (height / 7)) {
+              opacityValue = 1 - distance / 20000;
+              ctx.strokeStyle = `rgba(${strokeColor}, ${opacityValue})`;
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.moveTo(particles[a].x, particles[a].y);
+              ctx.lineTo(particles[b].x, particles[b].y);
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      init();
+      animate();
+
+      // ==========================================
+      // 2. EFECTO NAV TRANSPARENTE AL HACER SCROLL
+      // ==========================================
+      window.addEventListener("scroll", () => {
+        const nav = document.querySelector("nav");
+        if (window.scrollY > 50) {
+          nav.style.background = "var(--nav-bg)";
+          nav.style.boxShadow = "0 4px 30px rgba(0, 0, 0, 0.5)";
+        } else {
+          nav.style.background = "transparent";
+          nav.style.boxShadow = "none";
+        }
+      });
+
+      // ==========================================
+      // 3. EASTER EGGS
+      // ==========================================
+      const toast = document.getElementById("secret-toast");
+      function showToast(message) {
+        toast.innerText = message;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 4000);
+      }
+
+      console.log(
+        "%c🏴‍☠️ ¡El One Piece es real!",
+        "color: #ffde03; font-size: 24px; font-weight: bold; background: #000; padding: 10px; border-radius: 5px; border: 2px solid red;",
+      );
+      console.log(
+        "%cDesplegando modelos IA locales...",
+        "color: #39ff14; font-size: 14px; font-family: monospace;",
+      );
+
+      // CyberOps Mode (Click rápido en el nombre 5 veces)
+      let clickCount = 0;
+      let clickTimer;
+      document.getElementById("brand-name").addEventListener("click", () => {
+        clickCount++;
+        clearTimeout(clickTimer);
+        clickTimer = setTimeout(() => {
+          clickCount = 0;
+        }, 2000);
+
+        if (clickCount === 2) {
+          document.body.classList.toggle("cyber-mode");
+          showToast("🔴 CYBEROPS MODE: Activado");
+          clickCount = 0;
+        }
+      });
+
+      // Código Konami (Dofus Reference)
+      const konamiCode = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown"];
+      let konamiIndex = 0;
+      window.addEventListener("keydown", (e) => {
+        if (e.key === konamiCode[konamiIndex]) {
+          konamiIndex++;
+          if (konamiIndex === konamiCode.length) {
+            showToast("🐉 ¡Has encontrado el Dofus Esmeralda!");
+            konamiIndex = 0;
+          }
+        } else {
+          konamiIndex = 0;
+        }
+      });
+    </script>
+  </body>
+</html>
